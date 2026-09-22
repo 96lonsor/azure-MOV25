@@ -26,6 +26,7 @@
     }
   },
   "variables": {
+    "cloudInitScript": "#cloud-config\npackage_update: true\npackage_upgrade: true\npackages:\n  - nginx\nwrite_files:\n  - path: /var/www/html/index.html\n    owner: www-data:www-data\n    permissions: '0644'\n    content: |\n      <!DOCTYPE html>\n      <html>\n      <head>\n      <title>Welcome to Novatrix</title>\n      <style>\n      html { color-scheme: light dark; }\n      body { width: 35em; margin: 0 auto;\n      font-family: Tahoma, Verdana, Arial, sans-serif; }\n      </style>\n      </head>\n      <body>\n      <h1>Novatrix</h1>\n      <p>Uppdateras inom kort</p>\n      <form>\n      <label for=\"name\">Namn</label>\n      <input type=\"text\" id=\"name\" name=\"name\"><br>\n      <label for=\"mail\">Mail</label>\n      <input type=\"text\" id=\"mail\" name=\"mail\"><br>\n      <label for=\"msg\">Meddelande</label>\n      <textarea id=\"msg\" name=\"msg\" rows=\"4\" cols=\"50\"></textarea><br>\n      <input type=\"submit\" value=\"Skicka\">\n      </form>\n      </body>\n      </html>\nruncmd:\n  - systemctl enable nginx\n  - systemctl restart nginx\n"
   },
   "resources": [
     {
@@ -134,6 +135,7 @@
         "osProfile": {
           "computerName": "[format('vm-{0}', parameters('namePrefix'))]",
           "adminUsername": "[parameters('adminUsername')]",
+          "customData": "[base64(variables('cloudInitScript'))]",
           "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
@@ -187,6 +189,10 @@
     "publicIpAddress": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('namePrefix')))).ipAddress]"
+    },
+    "formUrl": {
+      "type": "string",
+      "value": "[format('http://{0}/', reference(resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('namePrefix')))).ipAddress)]"
     }
   }
 }
