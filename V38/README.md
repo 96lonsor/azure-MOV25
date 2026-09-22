@@ -49,8 +49,22 @@ az deployment group create -g rg-novatrix --template-file miljo-skelett.json \
 
 **Verifiering:**
 
-- `az deployment group create` slutfördes utan fel (exit code 0).
-- Formuläret är nåbart: `curl http://20.91.239.215/` returnerar HTTP 200 med Novatrix ärendeformulär (rubrik, fälten Namn/Mail/Meddelande) identiskt med sidan från vecka 34, men nu helt automatiskt utlagd via cloud-init i templaten istället för manuellt via `nano`.
+- `az deployment group create` slutfördes utan fel (exit code 0). Portalen bekräftar samma sak under **Resursgrupp → Deployments**, med statusen "Succeeded":
+
+  ![Deployment succeeded i rg-novatrix](screenshots/deployment-succeeded.png)
+
+- Deploymentens detaljvy visar samtliga 6 resurser skapade med status OK:
+
+  ![Deployment overview - alla resurser OK](screenshots/deployment-overview.png)
+
+- VM:ens egenskaper i portalen matchar templaten: Ubuntu 24.04, storlek Standard B2ts v2, publik IP `20.91.239.215`, kopplad till `vnet-novatrix/subnet-web`:
+
+  ![VM properties](screenshots/vm-properties.png)
+
+- Formuläret är nåbart: `curl http://20.91.239.215/` returnerar HTTP 200 med Novatrix ärendeformulär (rubrik, fälten Namn/Mail/Meddelande) identiskt med sidan från vecka 34, men nu helt automatiskt utlagd via cloud-init i templaten istället för manuellt via `nano`. Bekräftat i webbläsaren:
+
+  ![Novatrix formulär nåbart i webbläsaren](screenshots/form-browser.png)
+
 - Lagringen är på plats: `az storage account show -g rg-novatrix -n stnovatrixw7exi6thpfmeq` visar `provisioningState: Succeeded`, `sku: Standard_LRS`, `kind: StorageV2`.
 
 ## Delmoment 4 – Visa versionshantering
