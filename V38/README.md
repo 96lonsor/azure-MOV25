@@ -1,6 +1,6 @@
 # Vecka 38 – Infrastructure as Code (CLI & ARM-template)
 
-Tidigare veckor har miljön (VM, nätverk, NSG, storage m.m.) byggts upp grafiskt via Azure Portal. Den här veckan återskapas samma typ av miljö helt i kod – via Azure CLI, ARM-templates och Bicep – så att den kan driftsättas reproducerbart utan manuella klick i portalen.
+Tidigare veckor har miljön (VM, nätverk, NSG, storage m.m.) byggts upp grafiskt via Azure Portal. Den här veckan återskapas samma typ av miljö helt i kod via Azure CLI, ARM-templates och Bicep, så att den kan driftsättas reproducerbart utan manuella klick i portalen.
 
 ## Filerna
 
