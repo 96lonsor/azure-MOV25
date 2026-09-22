@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "namePrefix": { "value": "novatrix" },
+    "location": { "value": "swedencentral" },
+    "adminUsername": { "value": "azureuser" },
+    "sshPublicKey": { "value": "REPLACE_WITH_YOUR_PUBLIC_SSH_KEY" }
+  }
+}

@@ -106,6 +106,15 @@ az deployment group create -g rg-novatrix --template-file miljo-skelett.json \
 
 Deploymenten skapar NSG, VNet/subnät, storage account, publik IP, NIC och VM i ett enda kommando. VM:en installerar och konfigurerar sig själv vid uppstart via `customData`, så ingen manuell SSH-konfiguration krävs, hela kedjan från kod till fungerande kundtjänstformulär är reproducerbar.
 
+**Deploya med egna parametrar**
+
+`miljo-skelett.parameters.json` innehåller alla parametrar (`namePrefix`, `location`, `adminUsername`, `sshPublicKey`) och kan redigeras för att t.ex. döpa om resurserna, byta region eller admin-användarnamn. Fyll i din egen publika SSH-nyckel istället för platshållaren, och deploya sedan med:
+
+```bash
+az deployment group create -g rg-novatrix --template-file miljo-skelett.json \
+  --parameters @miljo-skelett.parameters.json
+```
+
 **Nedrivning** (för att inte förbruka onödig kredit):
 
 ```bash
