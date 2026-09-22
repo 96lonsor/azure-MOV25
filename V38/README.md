@@ -23,7 +23,7 @@ Templates ligger versionshanterade i det här repot, under `V38/`.
 - **Publik IP** (Standard, statisk) och **NIC**, kopplade till VNet-subnätet
 - **VM** (Ubuntu Server 24.04, `Standard_B2ts_v2`), inloggning via SSH-nyckel (ingen lösenordsautentisering)
 
-Resurserna är kedjade med `dependsOn`: NSG → VNet → NIC → VM. VM:en bootstrapas automatiskt vid uppstart via `customData` (cloud-init), som installerar Nginx och lägger ut samma ärendeformulär som i vecka 34 – helt utan manuella SSH-steg.
+Resurserna är kedjade med `dependsOn`: NSG → VNet → NIC → VM. VM:en bootstrapas automatiskt vid uppstart via `customData` (cloud-init), som installerar Nginx och lägger ut samma ärendeformulär som i vecka 34, helt utan manuella SSH-steg.
 
 ## Delmoment 3 – Deploya från kod
 
@@ -50,7 +50,7 @@ az deployment group create -g rg-novatrix --template-file miljo-skelett.json \
 **Verifiering:**
 
 - `az deployment group create` slutfördes utan fel (exit code 0).
-- Formuläret är nåbart: `curl http://20.91.239.215/` returnerar HTTP 200 med Novatrix ärendeformulär (rubrik, fälten Namn/Mail/Meddelande) – identiskt med sidan från vecka 34, men nu helt automatiskt utlagd via cloud-init i templaten istället för manuellt via `nano`.
+- Formuläret är nåbart: `curl http://20.91.239.215/` returnerar HTTP 200 med Novatrix ärendeformulär (rubrik, fälten Namn/Mail/Meddelande) identiskt med sidan från vecka 34, men nu helt automatiskt utlagd via cloud-init i templaten istället för manuellt via `nano`.
 - Lagringen är på plats: `az storage account show -g rg-novatrix -n stnovatrixw7exi6thpfmeq` visar `provisioningState: Succeeded`, `sku: Standard_LRS`, `kind: StorageV2`.
 
 ## Delmoment 4 – Visa versionshantering
@@ -68,7 +68,7 @@ Som ett konkret exempel på en ändring: efter att G- och VG-delarna var deploya
 
 **Varför det hjälper drift och samarbete:**
 
-- Varje ändring i infrastrukturen är spårbar – man ser exakt vad som lades till (NSG, VNet, VM …) och när, istället för att behöva komma ihåg vad som klickades i portalen.
+- Varje ändring i infrastrukturen är spårbar, man ser exakt vad som lades till (NSG, VNet, VM …) och när, i stället för att behöva komma ihåg vad som klickades i portalen.
 - Går det sönder går det att gå tillbaka till en tidigare, fungerande version av templaten med `git revert`/`git checkout`, istället för att felsöka en portal utan historik.
 - Fler personer kan arbeta mot samma miljödefinition och se varandras ändringar som diffar i templaten, istället för att bara kunna fråga muntligt "vad ändrade du i portalen?".
 
@@ -83,14 +83,14 @@ cd azure-MOV25/V38
 az login
 az group create -n rg-novatrix -l swedencentral
 
-# Generera en SSH-nyckel att logga in med (om du inte redan har en)
+# Generera en SSH-nyckel att logga in med 
 ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_novatrix -N ""
 
 az deployment group create -g rg-novatrix --template-file miljo-skelett.json \
   --parameters sshPublicKey="$(cat ~/.ssh/id_ed25519_novatrix.pub)"
 ```
 
-Deploymenten skapar NSG, VNet/subnät, storage account, publik IP, NIC och VM i ett enda kommando. VM:en installerar och konfigurerar sig själv vid uppstart via `customData`, så ingen manuell SSH-konfiguration krävs – hela kedjan från kod till fungerande kundtjänstformulär är reproducerbar.
+Deploymenten skapar NSG, VNet/subnät, storage account, publik IP, NIC och VM i ett enda kommando. VM:en installerar och konfigurerar sig själv vid uppstart via `customData`, så ingen manuell SSH-konfiguration krävs, hela kedjan från kod till fungerande kundtjänstformulär är reproducerbar.
 
 **Nedrivning** (för att inte förbruka onödig kredit):
 
