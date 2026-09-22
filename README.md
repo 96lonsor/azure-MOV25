@@ -10,6 +10,7 @@
 | 35 | IAM & RBAC | [V35](./V35/README.md) |
 | 36 | Nätverk och säkerhet | [V36](./V36/README.md) |
 | 37 | Lagring (Storage) | [V37](V37) |
+| 38 | Infrastructure as Code (CLI & ARM-template) | [V38](./V38/README.md) |
 
 ## Vecka 34 – Provisionera VM, Nginx och kundtjänstsida
 
@@ -26,3 +27,7 @@ Byggt vidare på nätverket med flera nätverkskort (NIC) och konfigurerat NSG-r
 ## Vecka 37 — Lagring (Storage)
 
 Skapade ett storage account (`stnovatrix96`) och en privat Blob-container (`arenden`) för att ta emot inskickade ärenden och bifogade filer. Säkrade åtkomsten med tidsbegränsad SAS-token (endast läsbehörighet) och RBAC-rollen Storage Blob Data Reader, enligt least privilege. Se [V37/README.md](V37/README.md) för fullständig dokumentation, kommandon och verifiering.
+
+## Vecka 38 — Infrastructure as Code (CLI & ARM-template)
+
+Återskapar samma miljö som byggdes grafiskt i tidigare veckor, men nu helt i kod via Azure CLI och ARM-templates, för reproducerbar driftsättning utan manuella klick i portalen. Se [V38/README.md](./V38/README.md) för fullständig dokumentation, kommandon och verifiering.
