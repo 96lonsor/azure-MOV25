@@ -11,4 +11,6 @@ Tidigare veckor har miljön (VM, nätverk, NSG, storage m.m.) byggts upp grafisk
 
 ## Status
 
-Startpaketet med exempelfiler är på plats. Nästa steg är att fylla i `miljo-skelett.json` med den faktiska miljön och dokumentera deployment via `az deployment group create` / `what-if`.
+`miljo-skelett.json` innehåller nu hela miljön: NSG med webbregel (80/443), VNet med subnät, storage account, samt (för VG) publik IP, nätverkskort och en Ubuntu-VM, ihopkopplade med `dependsOn`. VM:en loggar in via SSH-nyckel istället för lösenord, så ingen hemlighet behöver lagras i repot.
+
+Nästa steg är att deploya via `az deployment group create` / `what-if` och verifiera resultatet mot resursgruppen.

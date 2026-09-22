@@ -14,6 +14,15 @@
       "type": "string",
       "defaultValue": "swedencentral",
       "metadata": { "description": "Region for resurserna." }
+    },
+    "adminUsername": {
+      "type": "string",
+      "defaultValue": "azureuser",
+      "metadata": { "description": "Admin-anvandarnamn for VM:en." }
+    },
+    "sshPublicKey": {
+      "type": "string",
+      "metadata": { "description": "Publik SSH-nyckel for inloggning pa VM:en (ingen losenordsinloggning)." }
     }
   },
   "variables": {
@@ -74,6 +83,88 @@
       "location": "[parameters('location')]",
       "sku": { "name": "Standard_LRS" },
       "kind": "StorageV2"
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-05-01",
+      "name": "[format('pip-{0}', parameters('namePrefix'))]",
+      "location": "[parameters('location')]",
+      "sku": { "name": "Standard" },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-05-01",
+      "name": "[format('nic-{0}', parameters('namePrefix'))]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-{0}', parameters('namePrefix')))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('namePrefix')))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-{0}', parameters('namePrefix')), 'subnet-web')]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('namePrefix')))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-09-01",
+      "name": "[format('vm-{0}', parameters('namePrefix'))]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('namePrefix')))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B2ts_v2"
+        },
+        "osProfile": {
+          "computerName": "[format('vm-{0}', parameters('namePrefix'))]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[format('/home/{0}/.ssh/authorized_keys', parameters('adminUsername'))]",
+                  "keyData": "[parameters('sshPublicKey')]"
+                }
+              ]
+            }
+          }
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "ubuntu-24_04-lts",
+            "sku": "server",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('namePrefix')))]"
+            }
+          ]
+        }
+      }
     }
   ],
   "outputs": {
@@ -88,6 +179,14 @@
     "storageAccountName": {
       "type": "string",
       "value": "[format('st{0}{1}', parameters('namePrefix'), uniqueString(resourceGroup().id))]"
+    },
+    "vmId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Compute/virtualMachines', format('vm-{0}', parameters('namePrefix')))]"
+    },
+    "publicIpAddress": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('namePrefix')))).ipAddress]"
     }
   }
 }
