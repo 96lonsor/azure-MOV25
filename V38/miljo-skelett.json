@@ -26,7 +26,8 @@
     }
   },
   "variables": {
-    "cloudInitScript": "#cloud-config\npackage_update: true\npackage_upgrade: true\npackages:\n  - nginx\nwrite_files:\n  - path: /var/www/html/index.html\n    owner: www-data:www-data\n    permissions: '0644'\n    content: |\n      <!DOCTYPE html>\n      <html>\n      <head>\n      <title>Welcome to Novatrix</title>\n      <style>\n      html { color-scheme: light dark; }\n      body { width: 35em; margin: 0 auto;\n      font-family: Tahoma, Verdana, Arial, sans-serif; }\n      </style>\n      </head>\n      <body>\n      <h1>Novatrix</h1>\n      <p>Uppdateras inom kort</p>\n      <form>\n      <label for=\"name\">Namn</label>\n      <input type=\"text\" id=\"name\" name=\"name\"><br>\n      <label for=\"mail\">Mail</label>\n      <input type=\"text\" id=\"mail\" name=\"mail\"><br>\n      <label for=\"msg\">Meddelande</label>\n      <textarea id=\"msg\" name=\"msg\" rows=\"4\" cols=\"50\"></textarea><br>\n      <input type=\"submit\" value=\"Skicka\">\n      </form>\n      </body>\n      </html>\nruncmd:\n  - systemctl enable nginx\n  - systemctl restart nginx\n"
+    "storageAccountName": "[format('st{0}{1}', parameters('namePrefix'), uniqueString(resourceGroup().id))]",
+    "cloudInitScript": "[concat('#cloud-config\npackage_update: true\npackage_upgrade: true\npackages:\n  - nginx\n  - python3-venv\n  - python3-pip\nwrite_files:\n  - path: /opt/arendeapp/app.py\n    owner: root:root\n    permissions: ''0644''\n    content: |\n      import os\n      import uuid\n      import json\n      from datetime import datetime, timezone\n      from flask import Flask, request, render_template_string\n      from azure.identity import DefaultAzureCredential\n      from azure.storage.blob import BlobServiceClient\n\n      app = Flask(__name__)\n\n      STORAGE_ACCOUNT = os.environ.get(\"STORAGE_ACCOUNT\", \"\")\n      CONTAINER = \"arenden\"\n\n      credential = DefaultAzureCredential()\n      blob_service = BlobServiceClient(\n          account_url=\"https://\" + STORAGE_ACCOUNT + \".blob.core.windows.net\",\n          credential=credential,\n      )\n\n      FORM_HTML = \"\"\"\n      <!DOCTYPE html>\n      <html>\n      <head>\n      <title>Novatrix kundtjanst</title>\n      <style>\n      html { color-scheme: light dark; }\n      body { width: 35em; margin: 0 auto; font-family: Tahoma, Verdana, Arial, sans-serif; }\n      </style>\n      </head>\n      <body>\n      <h1>Novatrix kundtjanst</h1>\n      <p>Skicka in ett arende sa aterkommer vi sa snart vi kan.</p>\n      <form method=\"post\" enctype=\"multipart/form-data\">\n      <label for=\"name\">Namn</label><br>\n      <input type=\"text\" id=\"name\" name=\"name\" required><br>\n      <label for=\"mail\">Mail</label><br>\n      <input type=\"text\" id=\"mail\" name=\"mail\" required><br>\n      <label for=\"msg\">Meddelande</label><br>\n      <textarea id=\"msg\" name=\"msg\" rows=\"4\" cols=\"50\"></textarea><br>\n      <label for=\"file\">Bifoga en bild</label><br>\n      <input type=\"file\" id=\"file\" name=\"file\" accept=\"image/*\"><br><br>\n      <input type=\"submit\" value=\"Skicka arende\">\n      </form>\n      {% if arende_id %}\n      <p><strong>Tack for ditt arende! Arende-id: {{ arende_id }}</strong></p>\n      {% endif %}\n      </body>\n      </html>\n      \"\"\"\n\n      @app.route(\"/\", methods=[\"GET\", \"POST\"])\n      def index():\n          arende_id = None\n          if request.method == \"POST\":\n              arende_id = uuid.uuid4().hex[:8]\n              namn = request.form.get(\"name\", \"\")\n              epost = request.form.get(\"mail\", \"\")\n              meddelande = request.form.get(\"msg\", \"\")\n              tidpunkt = datetime.now(timezone.utc).isoformat()\n\n              arende = {\n                  \"arendeId\": arende_id,\n                  \"namn\": namn,\n                  \"epost\": epost,\n                  \"meddelande\": meddelande,\n                  \"tidpunkt\": tidpunkt,\n              }\n\n              container_client = blob_service.get_container_client(CONTAINER)\n              container_client.upload_blob(\n                  name=\"arende-\" + arende_id + \".json\",\n                  data=json.dumps(arende, ensure_ascii=False),\n                  overwrite=True,\n              )\n\n              uploaded_file = request.files.get(\"file\")\n              if uploaded_file and uploaded_file.filename:\n                  container_client.upload_blob(\n                      name=\"arende-\" + arende_id + \"-\" + uploaded_file.filename,\n                      data=uploaded_file.stream,\n                      overwrite=True,\n                  )\n\n          return render_template_string(FORM_HTML, arende_id=arende_id)\n\n\n      if __name__ == \"__main__\":\n          app.run(host=\"127.0.0.1\", port=5000)\n  - path: /etc/systemd/system/arendeapp.service\n    owner: root:root\n    permissions: ''0644''\n    content: |\n      [Unit]\n      Description=Novatrix arendeformular (Flask)\n      After=network.target\n\n      [Service]\n      Environment=STORAGE_ACCOUNT=', variables('storageAccountName'), '\n      WorkingDirectory=/opt/arendeapp\n      ExecStart=/opt/arendeapp/venv/bin/gunicorn -b 127.0.0.1:5000 app:app\n      Restart=always\n      User=www-data\n\n      [Install]\n      WantedBy=multi-user.target\n  - path: /etc/nginx/sites-available/default\n    owner: root:root\n    permissions: ''0644''\n    content: |\n      server {\n          listen 80 default_server;\n          listen [::]:80 default_server;\n          location / {\n              proxy_pass http://127.0.0.1:5000;\n              proxy_set_header Host $host;\n              proxy_set_header X-Real-IP $remote_addr;\n          }\n      }\nruncmd:\n  - python3 -m venv /opt/arendeapp/venv\n  - /opt/arendeapp/venv/bin/pip install --upgrade pip\n  - /opt/arendeapp/venv/bin/pip install flask gunicorn azure-identity azure-storage-blob\n  - chown -R www-data:www-data /opt/arendeapp\n  - systemctl daemon-reload\n  - systemctl enable arendeapp\n  - systemctl restart arendeapp\n  - systemctl restart nginx\n')]"
   },
   "resources": [
     {
@@ -80,10 +81,21 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2023-01-01",
-      "name": "[format('st{0}{1}', parameters('namePrefix'), uniqueString(resourceGroup().id))]",
+      "name": "[variables('storageAccountName')]",
       "location": "[parameters('location')]",
       "sku": { "name": "Standard_LRS" },
       "kind": "StorageV2"
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/default/arenden', variables('storageAccountName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ],
+      "properties": {
+        "publicAccess": "None"
+      }
     },
     {
       "type": "Microsoft.Network/publicIPAddresses",
@@ -128,6 +140,9 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('namePrefix')))]"
       ],
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "properties": {
         "hardwareProfile": {
           "vmSize": "Standard_B2ts_v2"
@@ -167,6 +182,21 @@
           ]
         }
       }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', variables('storageAccountName'), 'default', 'arenden'), 'Storage Blob Data Contributor', format('vm-{0}', parameters('namePrefix')))]",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}/blobServices/default/containers/arenden', variables('storageAccountName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', variables('storageAccountName'), 'default', 'arenden')]",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('vm-{0}', parameters('namePrefix')))]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', format('vm-{0}', parameters('namePrefix'))), '2023-09-01', 'full').identity.principalId]",
+        "principalType": "ServicePrincipal"
+      }
     }
   ],
   "outputs": {
@@ -180,7 +210,7 @@
     },
     "storageAccountName": {
       "type": "string",
-      "value": "[format('st{0}{1}', parameters('namePrefix'), uniqueString(resourceGroup().id))]"
+      "value": "[variables('storageAccountName')]"
     },
     "vmId": {
       "type": "string",
