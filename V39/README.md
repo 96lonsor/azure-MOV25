@@ -116,4 +116,19 @@ Min lärare tipsade också om en `/health`-endpoint för att snabbt se att backe
 
 Uppgift: visa hela kedjan från inskickat ärende till utförd åtgärd i Microsoft 365, och dokumentera flödets steg.
 
-Pågående. Flödet ligger i en lösning (`Novatrix ärendeflöde`) i Power Automate så att det går att exportera. Kvar är att exportera lösningen och lägga flödets definition som JSON i repot.
+Hela kedjan är testad med ärendet `ca6100be` (se skärmdumparna under Delmoment 3): formuläret skickar in ärendet, det sparas i Blob Storage, flödet skapar en rad i SharePoint-listan och sedan kommer notisen i Teams och mejlet samtidigt.
+
+### Flödet som text
+
+Ett flöde som bara finns i portalen är svårt att granska, så flödets definition ligger också i repot: [`power-automate-flow/novatrix-arende-till-m365.json`](power-automate-flow/novatrix-arende-till-m365.json). Tillsammans med [`V38/miljo-skelett.json`](../V38/miljo-skelett.json), som beskriver Azure-sidan (VM, storage, Flask-appen och anropet till flödet), finns då båda halvorna av kedjan som kod.
+
+Exportmenyn på själva flödet är tom numera, så jag fick gå via en lösning. Jag skapade lösningen `Novatrix ärendeflöde`, la till flödet och exporterade den som ohanterad zip. JSON-filen är den som låg under `Workflows/` i zippen, oförändrad. För att kunna skapa en lösning behövde miljön en Dataverse-databas. Det gick inte att skapa den från Power Automate (listorna för valuta och språk var tomma), men det fungerade via Power Platform admin center → Environments → Add Dataverse.
+
+Så här läser man kedjan i filen:
+
+- `triggers.manual` är HTTP-triggern (`"type": "Request", "kind": "Http"`) med samma schema som appen skickar.
+- `Create_item` har `"runAfter": {}`, alltså körs den direkt efter triggern. Den skapar raden i listan (`operationId: PostItem`), och fälten hämtas med `triggerBody()?['namn']` osv.
+- `Send_an_email_(V2)` och `Post_message_in_a_chat_or_channel` har båda `"runAfter": {"Create_item": ["Succeeded"]}`. Det är det som gör att de körs parallellt, och bara om ärendet har registrerats.
+- `connectionReferences` pekar ut vilka anslutningar flödet använder (Outlook, SharePoint, Teams). Det är bara namn, inga lösenord.
+
+Flödets HTTP-adress finns inte i filen, den skapar Power Automate när flödet sparas. Filen innehåller alltså ingen nyckel.

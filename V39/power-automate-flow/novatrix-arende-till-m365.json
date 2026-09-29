@@ -1,0 +1,146 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_office365": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "crd70_sharedoffice365_9d41a"
+        },
+        "api": {
+          "name": "shared_office365"
+        }
+      },
+      "shared_sharepointonline": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "new_sharedsharepointonline_5fb88"
+        },
+        "api": {
+          "name": "shared_sharepointonline"
+        }
+      },
+      "shared_teams": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "new_sharedteams_c7e36"
+        },
+        "api": {
+          "name": "shared_teams"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {},
+          "type": "Request",
+          "kind": "Http",
+          "inputs": {
+            "triggerAuthenticationType": "All",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "arendeId": {
+                  "type": "string"
+                },
+                "namn": {
+                  "type": "string"
+                },
+                "epost": {
+                  "type": "string"
+                },
+                "meddelande": {
+                  "type": "string"
+                },
+                "tidpunkt": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "actions": {
+        "Send_an_email_(V2)": {
+          "runAfter": {
+            "Create_item": [
+              "Succeeded"
+            ]
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "emailMessage/To": "96lonsor@gmail.com",
+              "emailMessage/Subject": "Nytt ärende @{triggerBody()?['arendeId']}",
+              "emailMessage/Body": "<p class=\"editor-paragraph\">Namn: @{triggerBody()?['namn']}</p><p class=\"editor-paragraph\">Epost: @{triggerBody()?['epost']}</p><p class=\"editor-paragraph\">Meddelande: @{triggerBody()?['meddelande']}</p><br><p class=\"editor-paragraph\">ID: @{triggerBody()?['arendeId']}</p>",
+              "emailMessage/Importance": "Normal"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+              "operationId": "SendEmailV2",
+              "connectionName": "shared_office365"
+            }
+          }
+        },
+        "Create_item": {
+          "runAfter": {},
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "dataset": "https://96lonsorgmail.sharepoint.com",
+              "table": "88945bae-f25c-4fa8-8447-f83b4092ef06",
+              "item/Title": "@triggerBody()?['namn']",
+              "item/OData__x00c4_rende_x002d_ID": "@triggerBody()?['arendeId']",
+              "item/E_x002d_post": "@triggerBody()?['epost']",
+              "item/Meddelande": "@triggerBody()?['meddelande']",
+              "item/Inskickat": "@triggerBody()?['tidpunkt']",
+              "item/Status/Value": "Ny"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+              "operationId": "PostItem",
+              "connectionName": "shared_sharepointonline"
+            }
+          }
+        },
+        "Post_message_in_a_chat_or_channel": {
+          "runAfter": {
+            "Create_item": [
+              "Succeeded"
+            ]
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "poster": "Flow bot",
+              "location": "Channel",
+              "body/recipient/groupId": "36dda78d-d47a-43e7-a474-13261a245e50",
+              "body/recipient/channelId": "19:9N5ZvIvBHX_R5_U6SFUwmDOxmnIB_mlzaMm4RBKfNiE1@thread.tacv2",
+              "body/messageBody": "<p class=\"editor-paragraph\">Nytt ärende @{triggerBody()?['arendeId']} från @{triggerBody()?['namn']}@{triggerBody()?['epost']} : @{triggerBody()?['meddelande']}</p>"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_teams",
+              "operationId": "PostMessageToConversation",
+              "connectionName": "shared_teams"
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}
