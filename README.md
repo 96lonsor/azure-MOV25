@@ -12,6 +12,7 @@
 | 37 | Lagring (Storage) | [V37](V37) |
 | 38 | Infrastructure as Code (CLI & ARM-template) | [V38](./V38/README.md) |
 | 39 | Power Automate & Microsoft 365-integration | [V39](./V39/README.md) |
+| 40 | Container i Azure Container Instances (ACI) | [V40](./V40/README.md) |
 
 ## Vecka 34 – Provisionera VM, Nginx och kundtjänstsida
 
@@ -36,3 +37,7 @@ Skapade ett storage account (`stnovatrix96`) och en privat Blob-container (`aren
 ## Vecka 39 — Power Automate & Microsoft 365-integration
 
 Byggde ett Power Automate-flöde som triggas när ett nytt ärende skickas in, skapar en post i SharePoint-listan "Novatrix ärenderegister" och notifierar kundtjänst i Teams. Flödet kopplades till den befintliga Azure-lösningen (VM + Flask-backend) så att ett inskickat ärende går hela vägen från formuläret till en post och notis i Microsoft 365. Se [V39/README.md](./V39/README.md) för fullständig dokumentation av flödets steg och verifiering.
+
+## Vecka 40 — Container i Azure Container Instances
+
+Körde Novatrix kundtjänstsida som en container i ACI i stället för på en VM. Imagen (nginx:alpine + sidan) byggdes i Azure Container Registry med `az acr build` och startades med `az container create`. README:n tar också upp varför containernivån passar Novatrix bättre än en VM när det gäller kostnad, skalning och drift. Se [V40/README.md](./V40/README.md).
