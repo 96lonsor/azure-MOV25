@@ -1,6 +1,6 @@
 # Modul 1 – Händelsekedja i Azure
 
-I V39 skötte ett Power Automate-flöde de nya ärendena. I den här modulen gör Azures egna tjänster samma jobb. När ett ärende sparas som blob i containern `arenden` startar en kedja som skriver ärendet i ett register, skickar ett mejl och lägger en notis i Teams. Allt är byggt med Bicep.
+I V39 skötte ett Power Automate-flöde de nya ärendena. I den här modulen gör Azures egna tjänster samma jobb. När ett ärende sparas som blob i containern `arenden` startar en kedja som skriver ärendet i ett register, skickar ett mejl och lägger en notis i Teams. Allt är byggt med Bicep och via portal.
 
 ## Så hänger kedjan ihop
 
