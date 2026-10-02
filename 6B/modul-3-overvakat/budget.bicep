@@ -1,5 +1,5 @@
 // Budgetlarm för hela prenumerationen. Läggs upp innan något dyrt testas,
-// framför allt scale settet i modul 2.
+// 
 targetScope = 'subscription'
 
 @description('Månadsbudget i prenumerationens valuta.')
