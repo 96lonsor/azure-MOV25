@@ -1,0 +1,5 @@
+# Klienthemlighet, flödets URL och testlösenord
+.env.local
+__pycache__/
+*.pyc
+.venv/

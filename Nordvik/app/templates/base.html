@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block titel %}Nordvik hyresgästportal{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <a class="logga" href="/">Nordvik Fastigheter</a>
+  {% if miljo != 'prod' %}<span class="miljo">{{ miljo }}</span>{% endif %}
+  <nav>
+    {% if anv %}
+      {% if 'hyresgast' in anv.roller %}<a href="{{ url_for('mina') }}">Mina anmälningar</a><a href="{{ url_for('ny') }}">Ny felanmälan</a>{% endif %}
+      {% if 'forvaltare' in anv.roller %}<a href="{{ url_for('forvaltare') }}">Alla anmälningar</a>{% endif %}
+      {% if personal %}<a href="{{ url_for('ekonomi') }}">Sammanställning</a><a href="{{ url_for('dokument') }}">Dokument</a>{% endif %}
+      <span class="anv">{{ anv.namn }}</span>
+      <a href="/.auth/logout?post_logout_redirect_uri=/">Logga ut</a>
+    {% endif %}
+  </nav>
+</header>
+<main>
+{% block innehall %}{% endblock %}
+</main>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block innehall %}
+<h1>Kontrakt och besiktningsprotokoll</h1>
+{% if fel %}<p class="fel">{{ fel }}</p>{% endif %}
+<table>
+  <tr><th>Dokument</th><th>Storlek</th><th>Ändrad</th><th>Lagringsnivå</th></tr>
+  {% for f in filer %}
+  <tr><td><a href="{{ url_for('hamta_dokument', namn=f.namn) }}">{{ f.namn }}</a></td>
+      <td class="tal">{{ (f.storlek / 1024) | round(0) | int }} kB</td>
+      <td>{{ f.andrad.strftime('%Y-%m-%d') }}</td><td>{{ f.niva }}</td></tr>
+  {% else %}
+  <tr><td colspan="4">Inga dokument uppladdade.</td></tr>
+  {% endfor %}
+</table>
+{% if 'forvaltare' in anv.roller %}
+<h2>Ladda upp</h2>
+<form method="post" enctype="multipart/form-data">
+  <label for="fastighet">Fastighet</label>
+  <select id="fastighet" name="fastighet" required>{% for f in fastigheter %}<option>{{ f }}</option>{% endfor %}</select>
+  <label for="fil">PDF</label>
+  <input id="fil" name="fil" type="file" accept="application/pdf" required>
+  <button type="submit">Ladda upp</button>
+</form>
+{% endif %}
+{% endblock %}

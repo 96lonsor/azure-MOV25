@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block innehall %}
+<h1>Sammanställning</h1>
+<p>Totalt {{ totalt }} felanmälningar, varav {{ akuta }} akuta. Sidan visar bara antal, inga uppgifter om enskilda hyresgäster.</p>
+<div class="kolumner">
+  <section><h2>Per fastighet</h2><table>{% for k, v in per_fastighet %}<tr><td>{{ k }}</td><td class="tal">{{ v }}</td></tr>{% endfor %}</table></section>
+  <section><h2>Per kategori</h2><table>{% for k, v in per_kategori %}<tr><td>{{ k }}</td><td class="tal">{{ v }}</td></tr>{% endfor %}</table></section>
+  <section><h2>Per status</h2><table>{% for k, v in per_status.items() %}<tr><td>{{ k }}</td><td class="tal">{{ v }}</td></tr>{% endfor %}</table></section>
+  <section><h2>Per månad</h2><table>{% for k, v in per_manad %}<tr><td>{{ k }}</td><td class="tal">{{ v }}</td></tr>{% endfor %}</table></section>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+:root { color-scheme: light dark; --bla: #1f4e79; --akut: #b42318; }
+body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; line-height: 1.5; }
+header { background: var(--bla); color: #fff; padding: .8em 1.5em; display: flex; flex-wrap: wrap; align-items: center; gap: 1em; }
+header a { color: #fff; text-decoration: none; }
+.logga { font-weight: bold; font-size: 1.15em; margin-right: auto; }
+nav { display: flex; flex-wrap: wrap; gap: 1em; align-items: center; }
+.anv { opacity: .8; }
+.miljo { background: #f0b400; color: #000; padding: 0 .5em; border-radius: 3px; text-transform: uppercase; font-size: .8em; }
+main { max-width: 60em; margin: 0 auto; padding: 1em 1.5em 3em; }
+form { display: flex; flex-direction: column; max-width: 36em; gap: .3em; }
+form.inline { flex-direction: row; flex-wrap: wrap; align-items: center; gap: .5em; margin: .5em 0; max-width: none; }
+label { font-weight: 600; margin-top: .6em; }
+label.rad { font-weight: normal; }
+input, select, textarea, button { font: inherit; padding: .4em; }
+button, .knapp { background: var(--bla); color: #fff; border: 0; border-radius: 4px; padding: .5em 1em; cursor: pointer; text-decoration: none; display: inline-block; margin-top: .6em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+th, td { text-align: left; padding: .4em .6em; border-bottom: 1px solid #8884; }
+td.tal { text-align: right; }
+.akut { background: var(--akut); color: #fff; font-size: .75em; padding: 0 .4em; border-radius: 3px; }
+tr.akutrad { background: #b4231830; box-shadow: inset 4px 0 0 var(--akut); }
+.ok { background: #e6f4ea; color: #1e4620; padding: .6em 1em; border-radius: 4px; }
+.fel { background: #fdecea; color: #611a15; padding: .6em 1em; border-radius: 4px; }
+.info { border-left: 4px solid var(--bla); padding-left: .8em; }
+.meta { opacity: .75; }
+.beskrivning { white-space: pre-wrap; }
+img.bild { max-width: 100%; max-height: 30em; border-radius: 4px; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: .2em 1em; }
+dt { font-weight: 600; }
+.kolumner { display: grid; grid-template-columns: repeat(auto-fit, minmax(14em, 1fr)); gap: 1.5em; }

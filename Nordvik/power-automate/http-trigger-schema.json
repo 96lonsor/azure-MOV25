@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "anmalanId": { "type": "string" },
+    "fastighet": { "type": "string" },
+    "lagenhet": { "type": "string" },
+    "kategori": { "type": "string" },
+    "akut": { "type": "boolean" },
+    "rubrik": { "type": "string" },
+    "beskrivning": { "type": "string" },
+    "harBild": { "type": "boolean" },
+    "hyresgast": { "type": "string" },
+    "tilltrade": { "type": "boolean" },
+    "skapad": { "type": "string" },
+    "lank": { "type": "string" }
+  },
+  "required": [ "anmalanId", "fastighet", "kategori", "akut", "rubrik", "lank" ]
+}

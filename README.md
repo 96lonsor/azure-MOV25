@@ -41,3 +41,11 @@ Byggde ett Power Automate-flöde som triggas när ett nytt ärende skickas in, s
 ## Vecka 40 — Container i Azure Container Instances
 
 Körde Novatrix kundtjänstsida som en container i ACI i stället för på en VM. Imagen (nginx:alpine + sidan) byggdes i Azure Container Registry med `az acr build` och startades med `az container create`. README:n tar också upp varför containernivån passar Novatrix bättre än en VM när det gäller kostnad, skalning och drift. Se [V40/README.md](./V40/README.md).
+
+---
+
+# Slutuppgift – Nordvik Fastigheter
+
+Slutuppgiften är ett nytt företag och ligger därför i en egen mapp, [Nordvik](./Nordvik/README.md), och inte bland veckorna ovan.
+
+Nordvik förvaltar bostäder och lokaler och ville ha en portal där hyresgäster kan göra felanmälan med bild. Jag körde portalen i Azure Container Apps, lade lagringen bakom private endpoints och styrde hyresgäst, förvaltare och ekonomi med grupper i Entra ID. Hela Azure-delen byggs från en ARM-mall, och ett Power Automate-flöde lägger varje anmälan i en SharePoint-lista och skickar notis till förvaltaren i Teams, plus ett mejl om felet är akut.

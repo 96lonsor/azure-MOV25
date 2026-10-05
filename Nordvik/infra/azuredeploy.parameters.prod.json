@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "miljo": { "value": "prod" },
+    "location": { "value": "swedencentral" },
+    "lopnummer": { "value": "01" },
+    "adressPrefix": { "value": "10.40" },
+    "taggar": {
+      "value": {
+        "foretag": "Nordvik",
+        "system": "hyresgastportal",
+        "avdelning": "Forvaltning",
+        "kostnadsstalle": "KS4100",
+        "fastighet": "Gemensam",
+        "agare": "IT"
+      }
+    },
+    "minReplikor": { "value": 1 },
+    "dagReplikor": { "value": 2 },
+    "maxReplikor": { "value": 10 },
+    "zonRedundant": { "value": true },
+    "storageSku": { "value": "Standard_ZRS" },
+    "gruppHyresgaster": { "value": "75778a45-caac-41cb-8112-f7cb736ba786" },
+    "gruppForvaltare": { "value": "208c969d-6b48-486e-b45c-af97360b72b4" },
+    "gruppEkonomi": { "value": "7195227a-1a2c-453a-86c1-aec5fdb3c25b" },
+    "entraClientId": { "value": "fee3ebb0-e25b-4112-8818-2486911048d5" },
+    "budgetBelopp": { "value": 2500 },
+    "budgetEpost": { "value": "azureuser@96lonsorgmail.onmicrosoft.com" }
+  }
+}

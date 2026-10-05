@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block innehall %}
+<h1>{{ a.Rubrik }}</h1>
+<p class="meta">Nr {{ a.RowKey }} &middot; {{ a.Fastighet }}{% if a.Lagenhet %}, {{ a.Lagenhet }}{% endif %} &middot; {{ a.Kategori }}{% if a.Akut %} <span class="akut">akut</span>{% endif %} &middot; skapad {{ a.Skapad | lokaltid }}</p>
+<p class="beskrivning">{{ a.Beskrivning }}</p>
+{% if a.Bild %}<img class="bild" src="{{ url_for('bild', anmalan_id=a.RowKey) }}" alt="Bild på felet">{% endif %}
+<dl>
+  <dt>Status</dt><dd>{{ a.Status }}{% if a.Hanterad %} (senast ändrad av {{ a.Hanterad }}){% endif %}</dd>
+  <dt>Tillträde med huvudnyckel</dt><dd>{{ 'Ja' if a.TilltradeMedHuvudnyckel else 'Nej' }}</dd>
+  {% if 'forvaltare' in anv.roller %}
+  <dt>Hyresgäst</dt><dd>{{ a.Hyresgast }} ({{ a.HyresgastEpost }})</dd>
+  <dt>Notis skickad</dt><dd>{{ 'Ja' if a.Notifierad else 'Nej' }}</dd>
+  {% endif %}
+</dl>
+{% if 'forvaltare' in anv.roller %}
+<form method="post" action="{{ url_for('andra_status', anmalan_id=a.RowKey) }}" class="inline">
+  <select name="status">{% for s in statusar %}<option {% if s == a.Status %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+  <button type="submit">Ändra status</button>
+</form>
+{% if not a.Notifierad %}
+<form method="post" action="{{ url_for('notifiera_igen', anmalan_id=a.RowKey) }}" class="inline">
+  <button type="submit">Skicka notisen igen</button>
+</form>
+{% endif %}
+{% endif %}
+{% endblock %}

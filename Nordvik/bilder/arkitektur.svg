@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" font-family="Segoe UI, Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="pil" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <marker id="pilgron" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="780" fill="#ffffff"/>
+
+  <!-- Användare -->
+  <rect x="20" y="40" width="170" height="150" rx="8" fill="#f5f5f5" stroke="#999"/>
+  <text x="105" y="62" text-anchor="middle" font-weight="bold">Användare</text>
+  <text x="35" y="90">Hyresgäster (~5 500)</text>
+  <text x="35" y="112">Förvaltare (~40)</text>
+  <text x="35" y="134">Ekonomi (~6)</text>
+  <text x="35" y="166" font-size="11" fill="#555">webbläsare, HTTPS</text>
+
+  <!-- Entra -->
+  <rect x="20" y="230" width="170" height="130" rx="8" fill="#e8f0fb" stroke="#1f4e79"/>
+  <text x="105" y="252" text-anchor="middle" font-weight="bold">Entra ID</text>
+  <text x="32" y="276" font-size="12">app-nordvik-portal</text>
+  <text x="32" y="296" font-size="12">grp-nordvik-hyresgaster</text>
+  <text x="32" y="314" font-size="12">grp-nordvik-forvaltare</text>
+  <text x="32" y="332" font-size="12">grp-nordvik-ekonomi</text>
+  <text x="32" y="350" font-size="11" fill="#555">gruppclaims i token</text>
+
+  <!-- GitHub -->
+  <rect x="20" y="420" width="170" height="120" rx="8" fill="#f5f5f5" stroke="#999"/>
+  <text x="105" y="442" text-anchor="middle" font-weight="bold">GitHub-repo</text>
+  <text x="32" y="466" font-size="12">infra/azuredeploy.json</text>
+  <text x="32" y="484" font-size="12">parameters.prod/test.json</text>
+  <text x="32" y="502" font-size="12">app/ (Dockerfile)</text>
+  <text x="32" y="520" font-size="12">scripts/deploy.sh</text>
+
+  <!-- Resursgrupp -->
+  <rect x="230" y="20" width="640" height="740" rx="10" fill="none" stroke="#1f4e79" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="245" y="42" font-weight="bold" fill="#1f4e79">rg-nordvik (swedencentral) · taggar: foretag, avdelning, fastighet, kostnadsstalle, miljo</text>
+
+  <!-- VNet -->
+  <rect x="250" y="60" width="600" height="420" rx="8" fill="#f3f8f3" stroke="#2e7d32"/>
+  <text x="265" y="82" font-weight="bold" fill="#2e7d32">vnet-nordvik 10.40.0.0/16</text>
+
+  <!-- Portalsubnät -->
+  <rect x="268" y="96" width="564" height="190" rx="6" fill="#ffffff" stroke="#2e7d32"/>
+  <text x="280" y="116" font-weight="bold">snet-nordvik-portal 10.40.0.0/24</text>
+  <text x="530" y="116" font-size="11" fill="#b42318">nsg-nordvik-portal: in 80/443 från Internet</text>
+  <rect x="284" y="128" width="532" height="146" rx="6" fill="#e8f0fb" stroke="#1f4e79"/>
+  <text x="298" y="148" font-weight="bold">cae-nordvik (Container Apps-miljö, zonredundant)</text>
+  <rect x="300" y="160" width="150" height="100" rx="6" fill="#fff" stroke="#1f4e79"/>
+  <text x="375" y="180" text-anchor="middle" font-weight="bold">ca-nordvik-portal</text>
+  <text x="375" y="200" text-anchor="middle" font-size="12">Easy Auth + Flask</text>
+  <text x="375" y="218" text-anchor="middle" font-size="12">0,5 vCPU / 1 GiB</text>
+  <text x="375" y="236" text-anchor="middle" font-size="12">id-nordvik-portal</text>
+  <rect x="470" y="158" width="330" height="80" rx="6" fill="#fff" stroke="#999" stroke-dasharray="4 3"/>
+  <text x="482" y="175" font-weight="bold" font-size="12">Skalning</text>
+  <text x="482" y="193" font-size="12">22–06: 1 replika (nästan bara vilopris)</text>
+  <text x="482" y="211" font-size="12">06–22: 2 replikor i olika zoner (cron)</text>
+  <text x="482" y="229" font-size="12">toppar: upp till 10 (20 samtidiga anrop/replika)</text>
+
+  <!-- Privat subnät -->
+  <rect x="268" y="300" width="564" height="160" rx="6" fill="#ffffff" stroke="#2e7d32"/>
+  <text x="280" y="320" font-weight="bold">snet-nordvik-privat 10.40.1.0/24</text>
+  <text x="530" y="320" font-size="11" fill="#b42318">nsg-nordvik-privat: bara 443 från portalsubnätet</text>
+  <rect x="300" y="340" width="150" height="50" rx="6" fill="#fff8e1" stroke="#a66f00"/>
+  <text x="375" y="362" text-anchor="middle" font-weight="bold" font-size="12">pe-nordvik-blob</text>
+  <text x="375" y="380" text-anchor="middle" font-size="11">privat IP</text>
+  <rect x="470" y="340" width="150" height="50" rx="6" fill="#fff8e1" stroke="#a66f00"/>
+  <text x="545" y="362" text-anchor="middle" font-weight="bold" font-size="12">pe-nordvik-table</text>
+  <text x="545" y="380" text-anchor="middle" font-size="11">privat IP</text>
+  <rect x="640" y="340" width="176" height="50" rx="6" fill="#fff" stroke="#999"/>
+  <text x="728" y="360" text-anchor="middle" font-size="11">privatelink.blob / .table</text>
+  <text x="728" y="377" text-anchor="middle" font-size="11">privata DNS-zoner</text>
+  <text x="280" y="420" font-size="11" fill="#555">Namnet stnordvik96lonsor01.blob.core.windows.net pekar på en privat IP inne i VNet:et.</text>
+  <text x="280" y="438" font-size="11" fill="#555">Utifrån svarar kontot inte alls (publicNetworkAccess = Disabled).</text>
+
+  <!-- Storage -->
+  <rect x="250" y="500" width="330" height="150" rx="8" fill="#fff8e1" stroke="#a66f00"/>
+  <text x="265" y="522" font-weight="bold">stnordvik96lonsor01 (ZRS)</text>
+  <text x="265" y="544" font-size="12">blob felanmalningar · bilder, cool efter 60 d</text>
+  <text x="265" y="564" font-size="12">blob dokument · cool 90 d, cold 365 d</text>
+  <text x="265" y="584" font-size="12">table felanmalningar · uppgifterna</text>
+  <text x="265" y="608" font-size="11" fill="#b42318">inga nycklar (shared key av), ingen publik åtkomst</text>
+  <text x="265" y="626" font-size="11" fill="#555">soft delete 14 d, TLS 1.2</text>
+
+  <!-- Övrigt i rg -->
+  <rect x="600" y="500" width="250" height="150" rx="8" fill="#f5f5f5" stroke="#999"/>
+  <text x="615" y="522" font-weight="bold">Drift och styrning</text>
+  <text x="615" y="544" font-size="12">crnordvik96lonsor01 (ACR, AcrPull)</text>
+  <text x="615" y="564" font-size="12">log-nordvik (Log Analytics)</text>
+  <text x="615" y="584" font-size="12">budget-nordvik 2 500 kr/mån</text>
+  <text x="615" y="604" font-size="12">policy: ärv taggar från rg</text>
+  <text x="615" y="624" font-size="12">Cost Mgmt Reader → ekonomi</text>
+
+  <!-- Microsoft 365 -->
+  <rect x="910" y="40" width="270" height="400" rx="10" fill="#f3eefa" stroke="#5c2d91" stroke-width="2"/>
+  <text x="1045" y="64" text-anchor="middle" font-weight="bold" fill="#5c2d91">Nordviks Microsoft 365</text>
+  <rect x="930" y="80" width="230" height="56" rx="6" fill="#fff" stroke="#5c2d91"/>
+  <text x="1045" y="102" text-anchor="middle" font-weight="bold" font-size="12">Power Automate</text>
+  <text x="1045" y="122" text-anchor="middle" font-size="11">HTTP-trigger (sig-nyckel)</text>
+  <rect x="930" y="160" width="230" height="56" rx="6" fill="#fff" stroke="#5c2d91"/>
+  <text x="1045" y="182" text-anchor="middle" font-size="12">SharePoint: Nordvik fastigheter</text>
+  <text x="1045" y="200" text-anchor="middle" font-size="11">slå upp ansvarig förvaltare</text>
+  <rect x="930" y="232" width="230" height="56" rx="6" fill="#fff" stroke="#5c2d91"/>
+  <text x="1045" y="254" text-anchor="middle" font-size="12">SharePoint: Nordvik felanmälningar</text>
+  <text x="1045" y="272" text-anchor="middle" font-size="11">ny post</text>
+  <rect x="930" y="304" width="108" height="64" rx="6" fill="#fff" stroke="#5c2d91"/>
+  <text x="984" y="330" text-anchor="middle" font-size="12">Teams-chatt</text>
+  <text x="984" y="348" text-anchor="middle" font-size="11">alla anmälningar</text>
+  <rect x="1052" y="304" width="108" height="64" rx="6" fill="#fff" stroke="#b42318"/>
+  <text x="1106" y="330" text-anchor="middle" font-size="12">Outlook</text>
+  <text x="1106" y="348" text-anchor="middle" font-size="11" fill="#b42318">bara akuta</text>
+  <text x="930" y="400" font-size="11" fill="#555">akut = värme, vatten och avlopp, lås och dörr</text>
+  <text x="930" y="418" font-size="11" fill="#555">länken i notisen leder in i portalen</text>
+
+  <!-- Pilar -->
+  <line x1="190" y1="115" x2="296" y2="200" stroke="#333" stroke-width="1.6" marker-end="url(#pil)"/>
+  <text x="196" y="178" font-size="11">1 HTTPS</text>
+  <line x1="190" y1="290" x2="296" y2="230" stroke="#333" stroke-width="1.4" stroke-dasharray="5 3" marker-start="url(#pil)" marker-end="url(#pil)"/>
+  <text x="196" y="312" font-size="11">2 inloggning</text>
+  <line x1="360" y1="262" x2="360" y2="338" stroke="#2e7d32" stroke-width="1.8" marker-end="url(#pilgron)"/>
+  <line x1="420" y1="262" x2="520" y2="338" stroke="#2e7d32" stroke-width="1.8" marker-end="url(#pilgron)"/>
+  <text x="366" y="296" font-size="11" fill="#2e7d32">3 spara</text>
+  <line x1="375" y1="392" x2="375" y2="498" stroke="#a66f00" stroke-width="1.6" marker-end="url(#pil)"/>
+  <line x1="545" y1="392" x2="470" y2="498" stroke="#a66f00" stroke-width="1.6" marker-end="url(#pil)"/>
+  <path d="M450,254 H860 C895,254 895,110 928,110" fill="none" stroke="#5c2d91" stroke-width="1.8" marker-end="url(#pil)"/>
+  <text x="600" y="250" font-size="11" fill="#5c2d91">4 POST felanmälan (JSON)</text>
+  <line x1="1045" y1="136" x2="1045" y2="158" stroke="#5c2d91" stroke-width="1.5" marker-end="url(#pil)"/>
+  <line x1="1045" y1="216" x2="1045" y2="230" stroke="#5c2d91" stroke-width="1.5" marker-end="url(#pil)"/>
+  <line x1="1010" y1="288" x2="984" y2="302" stroke="#5c2d91" stroke-width="1.5" marker-end="url(#pil)"/>
+  <line x1="1080" y1="288" x2="1106" y2="302" stroke="#b42318" stroke-width="1.5" marker-end="url(#pil)"/>
+  <path d="M190,480 C215,480 220,560 248,580" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="5 3" marker-end="url(#pil)"/>
+  <text x="196" y="565" font-size="11">ARM</text>
+    <text x="910" y="500" font-size="12" font-weight="bold">Flödet i korthet</text>
+  <text x="910" y="522" font-size="12">1 Hyresgästen öppnar portalen</text>
+  <text x="910" y="542" font-size="12">2 Easy Auth loggar in via Entra ID</text>
+  <text x="910" y="562" font-size="12">3 Bild → blob, uppgifter → table,</text>
+  <text x="922" y="580" font-size="12">via private endpoints</text>
+  <text x="910" y="600" font-size="12">4 Portalen anropar flödet → lista,</text>
+  <text x="922" y="618" font-size="12">Teams och vid akut fel mejl</text>
+  <text x="910" y="650" font-size="11" fill="#555">Bilden lämnar aldrig den privata</text>
+  <text x="910" y="666" font-size="11" fill="#555">lagringen, förvaltaren ser den i portalen.</text>
+</svg>
