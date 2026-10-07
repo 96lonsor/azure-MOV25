@@ -13,7 +13,7 @@
     <td><a href="{{ url_for('visa', anmalan_id=a.RowKey) }}">{{ a.RowKey }}</a></td>
     <td>{{ a.Rubrik }}{% if a.Bild %} (bild){% endif %}</td><td>{{ a.Fastighet }} {{ a.Lagenhet }}</td>
     <td>{{ a.Kategori }}{% if a.Akut %} <span class="akut">akut</span>{% endif %}</td>
-    <td>{{ a.Status }}</td><td>{{ a.Skapad | lokaltid }}</td>
+    <td><span class="status status-{{ a.Status | statusklass }}">{{ a.Status }}</span></td><td>{{ a.Skapad | lokaltid }}</td>
     <td>{{ 'ja' if a.Notifierad else 'nej' }}</td>
   </tr>
   {% else %}

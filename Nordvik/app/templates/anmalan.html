@@ -5,7 +5,7 @@
 <p class="beskrivning">{{ a.Beskrivning }}</p>
 {% if a.Bild %}<img class="bild" src="{{ url_for('bild', anmalan_id=a.RowKey) }}" alt="Bild på felet">{% endif %}
 <dl>
-  <dt>Status</dt><dd>{{ a.Status }}{% if a.Hanterad %} (senast ändrad av {{ a.Hanterad }}){% endif %}</dd>
+  <dt>Status</dt><dd><span class="status status-{{ a.Status | statusklass }}">{{ a.Status }}</span>{% if a.Hanterad %} (senast ändrad av {{ a.Hanterad }}){% endif %}</dd>
   <dt>Tillträde med huvudnyckel</dt><dd>{{ 'Ja' if a.TilltradeMedHuvudnyckel else 'Nej' }}</dd>
   {% if 'forvaltare' in anv.roller %}
   <dt>Hyresgäst</dt><dd>{{ a.Hyresgast }} ({{ a.HyresgastEpost }})</dd>

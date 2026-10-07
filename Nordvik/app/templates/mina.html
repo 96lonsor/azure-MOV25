@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block innehall %}
-<h1>Mina felanmälningar</h1>
+<h1>Felanmälningar</h1>
 {% if ny %}<p class="ok">Tack! Din felanmälan <strong>{{ ny }}</strong> är mottagen{% if notis %} och förvaltaren har fått en notis{% else %} och syns i förvaltarens lista{% endif %}.</p>{% endif %}
 <p><a class="knapp" href="{{ url_for('ny') }}">Gör en ny felanmälan</a></p>
 {% if anmalningar %}
@@ -11,7 +11,7 @@
     <td><a href="{{ url_for('visa', anmalan_id=a.RowKey) }}">{{ a.RowKey }}</a></td>
     <td>{{ a.Rubrik }}</td><td>{{ a.Fastighet }}</td>
     <td>{{ a.Kategori }}{% if a.Akut %} <span class="akut">akut</span>{% endif %}</td>
-    <td>{{ a.Status }}</td><td>{{ a.Skapad | lokaltid }}</td>
+    <td><span class="status status-{{ a.Status | statusklass }}">{{ a.Status }}</span></td><td>{{ a.Skapad | lokaltid }}</td>
   </tr>
   {% endfor %}
 </table>

@@ -1,27 +1,45 @@
 {% extends "base.html" %}
 {% block innehall %}
 <h1>Ny felanmälan</h1>
-<p class="info">Vid akuta fel som vattenläcka, strömavbrott eller att du inte kommer in i lägenheten: ring också jouren på 010-123 45 00.</p>
+<p class="info">Vattenläcka, strömavbrott eller kommer du inte in i lägenheten? Ring också jouren på 031-317 21 04.</p>
 {% if fel %}<p class="fel">{{ fel }}</p>{% endif %}
 <form method="post" enctype="multipart/form-data">
-  <label for="fastighet">Fastighet</label>
-  <select id="fastighet" name="fastighet" required>
-    <option value="">Välj...</option>
-    {% for f in fastigheter %}<option {% if varden.fastighet == f %}selected{% endif %}>{{ f }}</option>{% endfor %}
-  </select>
-  <label for="lagenhet">Lägenhets- eller lokalnummer</label>
-  <input id="lagenhet" name="lagenhet" maxlength="20" value="{{ varden.lagenhet }}">
-  <label for="kategori">Kategori</label>
-  <select id="kategori" name="kategori" required>
-    <option value="">Välj...</option>
-    {% for k in kategorier %}<option {% if varden.kategori == k %}selected{% endif %}>{{ k }}</option>{% endfor %}
-  </select>
+  <div class="tva">
+    <div>
+      <label for="fastighet">Fastighet</label>
+      <select id="fastighet" name="fastighet" required>
+        <option value="">Välj...</option>
+        {% for f in fastigheter %}<option {% if varden.fastighet == f %}selected{% endif %}>{{ f }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="lagenhet">Lägenhets- eller lokalnummer</label>
+      <input id="lagenhet" name="lagenhet" maxlength="20" placeholder="t.ex. 1102" value="{{ varden.lagenhet }}">
+    </div>
+  </div>
+
+  <fieldset class="chips">
+    <legend>Vad gäller det?</legend>
+    {% for k in kategorier %}
+    <label class="chip{% if k in akuta %} chip-akut{% endif %}">
+      <input type="radio" name="kategori" value="{{ k }}" required {% if varden.kategori == k %}checked{% endif %}>
+      <span>{{ k }}{% if k in akuta %}<i>akut</i>{% endif %}</span>
+    </label>
+    {% endfor %}
+    <p class="tips">Kategorier märkta akut skickar ett mejl till förvaltaren direkt.</p>
+  </fieldset>
+
   <label for="rubrik">Rubrik</label>
-  <input id="rubrik" name="rubrik" maxlength="120" required value="{{ varden.rubrik }}">
+  <input id="rubrik" name="rubrik" maxlength="120" required placeholder="Kort, t.ex. &quot;Läcker under diskbänken&quot;" value="{{ varden.rubrik }}">
   <label for="beskrivning">Beskrivning</label>
-  <textarea id="beskrivning" name="beskrivning" rows="6" maxlength="4000" required>{{ varden.beskrivning }}</textarea>
-  <label for="bild">Bild på felet (JPG, PNG, WebP eller HEIC, max 10 MB)</label>
-  <input id="bild" name="bild" type="file" accept="image/jpeg,image/png,image/webp,image/heic">
+  <textarea id="beskrivning" name="beskrivning" rows="5" maxlength="4000" required placeholder="Vad har hänt, sedan när och var i lägenheten?">{{ varden.beskrivning }}</textarea>
+
+  <label class="uppladdning" for="bild">
+    <strong>Lägg till en bild på felet</strong>
+    <small>JPG, PNG, WebP eller HEIC, max 10 MB</small>
+    <input id="bild" name="bild" type="file" accept="image/jpeg,image/png,image/webp,image/heic">
+  </label>
+
   <label class="rad"><input type="checkbox" name="tilltrade" value="ja"> Förvaltaren får gå in med huvudnyckel om jag inte är hemma</label>
   <button type="submit">Skicka felanmälan</button>
 </form>

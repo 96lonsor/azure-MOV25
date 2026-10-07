@@ -155,7 +155,12 @@ def lokaltid(iso):
 def mallvariabler():
     anv = getattr(g, "anv", None)
     personal = bool(anv and anv["roller"] & {"forvaltare", "ekonomi"})
-    return {"anv": anv, "personal": personal, "miljo": MILJO}
+    return {"anv": anv, "personal": personal, "miljo": MILJO, "akuta": AKUTA}
+
+
+@app.template_filter("statusklass")
+def statusklass(status):
+    return {"Ny": "ny", "Pågår": "pagar", "Åtgärdad": "klar"}.get(status, "ny")
 
 
 # --- Felanmälan ---------------------------------------------------------------
