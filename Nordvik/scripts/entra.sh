@@ -48,8 +48,8 @@ if ! grep -q '^ENTRA_CLIENT_SECRET=' .env.local; then
   echo "ENTRA_CLIENT_SECRET='${HEMLIGHET}'" >> .env.local
 fi
 
-# Testanvändare, en per roll plus en extra hyresgäst för att visa att man inte
-# ser någon annans anmälningar.
+# Testanvändare: Blomman är förvaltare, Bubblan och Buttran är hyresgäster (två
+# stycken för att visa att man inte ser varandras anmälningar) och Professorn är ekonomi.
 anvandare() {
   local alias=$1 namn=$2 grupp_id=$3
   local upn="${alias}@${DOMAN}"
@@ -65,10 +65,10 @@ anvandare() {
     || az ad group member add --group "$grupp_id" --member-id "$id"
 }
 
-anvandare hyresgast.anna "Anna Hyresgäst" "$GRUPP_HYRESGAST"
-anvandare hyresgast.bo "Bo Hyresgäst" "$GRUPP_HYRESGAST"
-anvandare forvaltare.fia "Fia Förvaltare" "$GRUPP_FORVALTARE"
-anvandare ekonomi.eva "Eva Ekonomi" "$GRUPP_EKONOMI"
+anvandare blomman "Blomman" "$GRUPP_FORVALTARE"
+anvandare bubblan "Bubblan" "$GRUPP_HYRESGAST"
+anvandare buttran "Buttran" "$GRUPP_HYRESGAST"
+anvandare professorn "Professorn" "$GRUPP_EKONOMI"
 
 M365_ID=$(az ad user show --id "$FORVALTARE_M365" --query id -o tsv)
 az ad group member check --group "$GRUPP_FORVALTARE" --member-id "$M365_ID" --query value -o tsv | grep -q true \

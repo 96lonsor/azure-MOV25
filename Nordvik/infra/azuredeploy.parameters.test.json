@@ -21,10 +21,10 @@
     "maxReplikor": { "value": 3 },
     "zonRedundant": { "value": false },
     "storageSku": { "value": "Standard_LRS" },
-    "gruppHyresgaster": { "value": "75778a45-caac-41cb-8112-f7cb736ba786" },
-    "gruppForvaltare": { "value": "208c969d-6b48-486e-b45c-af97360b72b4" },
-    "gruppEkonomi": { "value": "7195227a-1a2c-453a-86c1-aec5fdb3c25b" },
-    "entraClientId": { "value": "fee3ebb0-e25b-4112-8818-2486911048d5" },
+    "gruppHyresgaster": { "value": "3863db81-ee60-47de-beef-2e940bcd82bb" },
+    "gruppForvaltare": { "value": "e63f1c56-be20-4e4f-a407-8bc23f07626d" },
+    "gruppEkonomi": { "value": "4dc928df-f391-49a8-b95b-c175c3b694ad" },
+    "entraClientId": { "value": "bc809180-6ad5-4529-924f-4b32de2cffb0" },
     "budgetBelopp": { "value": 500 },
     "budgetEpost": { "value": "azureuser@96lonsorgmail.onmicrosoft.com" }
   }

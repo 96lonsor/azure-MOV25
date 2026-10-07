@@ -68,7 +68,7 @@ Ekonomi vill följa kostnaden per fastighet och avdelning, så allt är taggat, 
 
 Appen är enkel med flit. Den har ingen sökning, ingen historik över vem som ändrat vad och ingen kvittens till hyresgästen, eftersom tyngdpunkten skulle ligga på infrastrukturen.
 
-Hyresgästerna är vanliga användare i min tenant (`hyresgast.anna` och `hyresgast.bo`). Med 5 500 riktiga hyresgäster borde man använda Entra External ID, där kunderna skapar egna konton, men portalen skulle fungera på samma sätt.
+Hyresgästerna är vanliga användare i min tenant (Bubblan och Buttran). Med 5 500 riktiga hyresgäster borde man använda Entra External ID, där kunderna skapar egna konton, men portalen skulle fungera på samma sätt.
 
 Min tenant har Entra ID Free, och då går det inte att koppla app-roller till grupper (det kräver P1). Jag använde gruppclaims i stället. Token innehåller id:n för användarens grupper och portalen jämför dem med Nordvik-grupperna, så behörigheten styrs ändå helt med gruppmedlemskap.
 
@@ -129,24 +129,27 @@ Appen heter `ca-nordvik-portal` och kör i Container Apps-miljön `cae-nordvik`.
 
 I prod är det minst 1 replika, 2 på dagen och högst 10. HTTP-regeln lägger till en replika per 20 samtidiga anrop, så 120 användare vid månadsskiftet blir ungefär sex replikor, och resten finns kvar som marginal.
 
-Formuläret har rubrik, beskrivning och bild. Jag lade också till fastighet, lägenhetsnummer, kategori och en ruta för om förvaltaren får gå in med huvudnyckel, eftersom en förvaltare behöver veta det. Kategorin bestämmer om felet räknas som akut.
+Formuläret har rubrik, beskrivning och bild. Jag lade också till fastighet, lägenhetsnummer, kategori och en ruta för om förvaltaren får gå in med huvudnyckel, eftersom en förvaltare behöver veta det. Kategorin bestämmer om felet räknas som akut. Kategorierna är klickbara rutor i stället för en rullista, och de akuta är märkta så att hyresgästen ser det direkt.
 
-![Formuläret](bilder/01-formular.png)
+Utseendet gjorde jag enkelt: hela sidan i en babyrosa färg med vit text, menyn till vänster och innehållet till höger.
+
+![Formuläret, övre delen](bilder/test/01-formular-topp.png)
+![Formuläret ifyllt med bild](bilder/test/02-formular.png)
 
 Appen svarar på `/health` utan inloggning, och den adressen använder Container Apps för att kolla att containern lever. Efter utrullningen:
 
 ```
-$ curl https://ca-nordvik-portal.reddune-2c65dfcb.swedencentral.azurecontainerapps.io/health
+$ curl https://ca-nordvik-portal.salmonpebble-8cef80a1.swedencentral.azurecontainerapps.io/health
 {"flow_configured":true,"miljo":"prod","status":"ok","storage":"stnordvik96lonsor01"}
 
 $ az containerapp replica list -g rg-nordvik -n ca-nordvik-portal -o table
 Name                                         RunningState
--------------------------------------------  -------------
-ca-nordvik-portal--9r6uomh-565ccdb498-g276v  Running
-ca-nordvik-portal--9r6uomh-565ccdb498-vr2nm  Running
+-------------------------------------------  --------------
+ca-nordvik-portal--0000001-6bd85956c4-9plvj  Running
+ca-nordvik-portal--0000001-6bd85956c4-pg94z  Running
 ```
 
-Det var mitt på dagen och två replikor körde, så cron-regeln fungerade.
+Klockan var 13 och två replikor körde, så cron-regeln fungerade. Samma kommando tidigt på morgonen, före 06, visade en replika.
 
 ### Delmoment 2 – IAM
 
@@ -169,22 +172,26 @@ rader = tabell().query_entities("PartitionKey eq @oid", parameters={"oid": g.anv
 
 Appen hämtar alltså aldrig andras anmälningar och filtrerar bort dem efteråt, den frågar bara efter de egna. Ekonomi får bara antal per fastighet, kategori, status och månad, och frågan hämtar bara de kolumnerna, så namn, beskrivningar och bilder kommer aldrig med.
 
-Jag testade med en användare per roll i var sitt inkognitofönster. Anna skapade en akut anmälan om en läcka under diskbänken, med bild, och den syntes i hennes lista.
+Jag testade med fyra användare i var sitt inkognitofönster: Blomman är förvaltare, Bubblan och Buttran är hyresgäster och Professorn är ekonomi. Det behövs två hyresgäster för att kunna visa att de inte ser varandras anmälningar.
 
-![Annas lista](bilder/02-mina-anmalningar.png)
+Bubblan gjorde en akut anmälan om en vattenläcka under diskbänken, med bild, och den syntes i hennes lista.
 
-Bo hade en tom lista, och när jag klistrade in länken till Annas anmälan fick han "Hittades inte".
+![Bubblans lista](bilder/test/03-mina-anmalningar.png)
 
-![Bo når inte Annas anmälan](bilder/04-bo-nekas.png)
+Buttran hade en tom lista, och när jag klistrade in länken till Bubblans anmälan stod det "Hittades inte".
 
-Fia som förvaltare såg alla anmälningar, kunde öppna Annas med bilden och ändrade status till Pågår.
+![Buttrans tomma lista](bilder/test/04-buttran-tom-lista.png)
+![Buttran når inte Bubblans anmälan](bilder/test/05-buttran-nekas.png)
 
-![Förvaltaren ändrar status](bilder/07-forvaltare-status-pagar.png)
+Blomman som förvaltare såg alla anmälningar, kunde öppna Bubblans med bilden och ändrade status till Pågår.
 
-Eva på ekonomi såg bara antal, och när hon gick till förvaltarsidan stod det "Ingen behörighet".
+![Förvaltarens lista](bilder/test/06-forvaltare-lista.png)
+![Förvaltaren ändrar status](bilder/test/08-forvaltare-status-pagar.png)
 
-![Ekonomi ser bara antal](bilder/08-ekonomi-sammanstallning.png)
-![Ekonomi nekas](bilder/09-ekonomi-nekas.png)
+Professorn på ekonomi såg bara antal, och när Professorn gick till förvaltarsidan stod det "Ingen behörighet".
+
+![Ekonomi ser bara antal](bilder/test/09-ekonomi-sammanstallning.png)
+![Ekonomi nekas](bilder/test/10-ekonomi-nekas.png)
 
 I Azure har portalen en hanterad identitet, `id-nordvik-portal`. Jag tog en användartilldelad i stället för en systemtilldelad, eftersom den finns innan appen skapas. Då hinner rollerna komma på plats innan appen startar första gången, och samma identitet kan hämta imagen från registryt. Den har fyra roller, och ingen av dem gäller hela storage-kontot:
 
@@ -263,11 +270,11 @@ The request may be blocked by network rules of storage account.
 $ curl -s -o /dev/null -w "%{http_code}" "https://stnordvik96lonsor01.blob.core.windows.net/felanmalningar?restype=container"
 403
 
-$ curl -s -o /dev/null -w "%{http_code} -> %{redirect_url}" http://ca-nordvik-portal.reddune-2c65dfcb.swedencentral.azurecontainerapps.io/
-301 -> https://ca-nordvik-portal.reddune-2c65dfcb.swedencentral.azurecontainerapps.io/
+$ curl -s -o /dev/null -w "%{http_code} -> %{redirect_url}" http://ca-nordvik-portal.salmonpebble-8cef80a1.swedencentral.azurecontainerapps.io/
+301 -> https://ca-nordvik-portal.salmonpebble-8cef80a1.swedencentral.azurecontainerapps.io/
 ```
 
-Jag kom inte åt lagringen fast jag är ägare, men portalen kunde spara Annas anmälan med bild. Vägen in går alltså bara genom VNet:et.
+Jag kom inte åt lagringen fast jag är ägare, men portalen kunde spara Bubblans anmälan med bild. Vägen in går alltså bara genom VNet:et.
 
 ### Delmoment 4 – Storage
 
@@ -306,7 +313,7 @@ Innan bilden sparas läser appen de första byten i filen och godtar bara JPG, P
 
 Två lifecycle-regler håller nere kostnaden. Dokumenten flyttas till Cool efter 90 dagar och till Cold efter ett år, eftersom de sällan läses efter tre månader men måste finnas kvar. Bilderna flyttas till Cool efter 60 dagar och raderas efter tre år, eftersom personuppgifter inte ska sparas längre än de behövs. Archive gick inte att använda, eftersom det inte finns för ZRS. Raderade blobbar går att få tillbaka i 14 dagar och containrar i 7.
 
-![Förvaltaren ser bilden från den privata lagringen](bilder/06-forvaltare-anmalan-bild.png)
+![Förvaltaren ser bilden från den privata lagringen](bilder/test/07-forvaltare-anmalan-bild.png)
 
 ### Delmoment 5 – IaC
 
@@ -395,18 +402,18 @@ Flödet i Power Automate heter "Nordvik felanmälan till M365". När anmälan ä
 
 ```json
 {
-  "anmalanId": "261005-07fe4d",
+  "anmalanId": "261007-e75914",
   "fastighet": "Granliden 7",
-  "lagenhet": "0803",
+  "lagenhet": "1111",
   "kategori": "Värme",
   "akut": true,
-  "rubrik": "Kallt i alla element",
+  "rubrik": "kallt i hemmet",
   "beskrivning": "...",
   "harBild": false,
-  "hyresgast": "Anna Hyresgäst",
+  "hyresgast": "Bubblan",
   "tilltrade": true,
-  "skapad": "2026-10-05T11:33:..+00:00",
-  "lank": "https://ca-nordvik-portal.../anmalan/261005-07fe4d"
+  "skapad": "2026-10-07T10:51:..+00:00",
+  "lank": "https://ca-nordvik-portal.../anmalan/261007-e75914"
 }
 ```
 
@@ -429,18 +436,23 @@ Hos Novatrix gick notisen till en gemensam kanal, men Nordvik har 40 förvaltare
 ![Flödet](bilder/18-flode-overst.png)
 ![Create item](bilder/13-create-item-mappning.png)
 
-För att testa hela kedjan loggade jag in som Anna och gjorde två anmälningar direkt efter varandra. Den första var akut, "Kallt i alla element" (Värme) i Granliden 7. Den andra var en vanlig, "Tvättmaskinen låter konstigt" (Vitvaror) i Björkhagen 1. Båda fick "förvaltaren har fått en notis" i portalen och hamnade som nya rader i SharePoint-listan. Båda gav ett meddelande i Teams. Bara den akuta gav ett mejl, och det var märkt med hög prioritet. Flödet körde grönt hela vägen.
+För att testa hela kedjan räknade jag med Bubblans vattenläcka och gjorde två anmälningar till som Bubblan. En var akut, "kallt i hemmet" (Värme) i Granliden 7, och en var vanlig om diskmaskinen (Vitvaror) i Björkhagen 1. Alltså två akuta och en vanlig. Alla tre fick "förvaltaren har fått en notis" i portalen, hamnade som rader i SharePoint-listan och gav ett meddelande i Teams. Men det kom bara två mejl, ett för varje akut anmälan, båda med hög prioritet. Flödet körde grönt alla tre gångerna.
 
-![Kvittot i portalen](bilder/21-kedja-vanlig-skickad.png)
-![Raderna i SharePoint](bilder/25-kedja-sharepoint-1.png)
-![Ansvarig och länk i SharePoint](bilder/26-kedja-sharepoint-2.png)
-![Notiserna i Teams](bilder/22-kedja-teams.png)
-![Mejlet för den akuta anmälan](bilder/24-kedja-outlook-mejl.png)
-![Flödeskörningen](bilder/27-kedja-flodeskorning.png)
+![Bubblans tre anmälningar](bilder/test/11-kedja-bubblans-lista.png)
+![Notiserna i Teams](bilder/test/12-kedja-teams.png)
+![Två AKUT-mejl i inkorgen](bilder/test/13-kedja-outlook-inkorg.png)
+![Mejlet för den akuta anmälan](bilder/test/14-kedja-outlook-mejl.png)
+![Raderna i SharePoint](bilder/test/15-kedja-sharepoint-1.png)
+![Ansvarig och länk i SharePoint](bilder/test/16-kedja-sharepoint-2.png)
+![Körhistoriken](bilder/test/17-kedja-korhistorik.png)
 
-Om flödet inte svarar försvinner ingen anmälan, eftersom den redan är sparad. Portalen försöker tre gånger med lite väntan emellan. Lyckas det ändå inte står det "nej" i kolumnen Notis hos förvaltaren, och där finns en knapp för att skicka notisen igen. Innan jag kopplade in flödet stod det just "nej" (bild 05), och efteråt "ja".
+Körningen för diskmaskinen visar hur villkoret fungerar. Alla steg är gröna, men mejlsteget under True är gråmarkerat, alltså hoppades det över:
 
-Det blev några småfel som jag lät vara. Teams-steget hamnade efter villkoret i stället för bredvid det. Det fungerar, men om mejlet skulle misslyckas kommer inte heller Teams-notisen, så nästa gång skulle jag ändra Run after på Teams-steget till Create item, som jag gjorde i V39. I ämnesraden och i Teams-meddelandet försvann mellanslagen runt fälten ("Värmei Granliden 70803"), och det skulle gå att lösa med `concat()`. SharePoint-siten visar tiden i amerikansk tidszon, och det ändras under Regional settings. Outlook-anslutningen heter "NovatrixArendeflode" eftersom den är samma som jag skapade i V39, med samma konto.
+![Flödeskörningen för den vanliga anmälan](bilder/test/18-kedja-flodeskorning-vanlig.png)
+
+Om flödet inte svarar försvinner ingen anmälan, eftersom den redan är sparad. Portalen försöker tre gånger med lite väntan emellan. Lyckas det ändå inte står det "nej" i kolumnen Notis hos förvaltaren, och där finns en knapp för att skicka notisen igen. Efter testet stod det "ja" på alla tre i förvaltarens lista.
+
+Det blev några småfel som jag lät vara. Teams-steget hamnade efter villkoret i stället för bredvid det. Det fungerar, men om mejlet skulle misslyckas kommer inte heller Teams-notisen, så nästa gång skulle jag ändra Run after på Teams-steget till Create item, som jag gjorde i V39. I ämnesraden och i Teams-meddelandet försvann mellanslagen runt fälten ("Värmei Granliden 71111"), och det skulle gå att lösa med `concat()`. SharePoint-siten visar tiden i amerikansk tidszon, och det ändras under Regional settings. Outlook-anslutningen heter "NovatrixArendeflode" eftersom den är samma som jag skapade i V39, med samma konto.
 
 Flödets adress innehåller en nyckel (`sig=`), så den finns bara i `.env.local` och som secret i Container Apps.
 
